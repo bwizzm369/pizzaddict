@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizza Addict 🍕 — Nilvange</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0704;
+    --dark: #111008;
+    --card: #161208;
+    --red: #c8382a;
+    --red-light: #e04030;
+    --gold: #c9a84c;
+    --gold-light: #e8c46a;
+    --cream: #f2e8d5;
+    --muted: #7a6e5e;
+    --border: rgba(201,168,76,0.15);
+    --border-hover: rgba(201,168,76,0.4);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--black);
+    color: var(--cream);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.12s ease-out, width 0.2s, height 0.2s;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(10,7,4,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.05em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--gold); }
+  .nav-cta {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    border: none;
+    padding: 0.65rem 1.5rem;
+    cursor: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--gold-light); transform: scale(1.04); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 0 4rem;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 70% at 70% 50%, rgba(200,56,42,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 20% 80%, rgba(201,168,76,0.06) 0%, transparent 60%),
+      var(--black);
+  }
+  .hero-noise {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .hero-pill {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    border: 1px solid var(--border-hover);
+    padding: 0.45rem 1rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-pill span { width: 6px; height: 6px; background: var(--red); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.4); } }
+
+  .hero-content { position: relative; z-index: 2; max-width: 700px; }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 7vw, 6.5rem);
+    line-height: 1.0;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+  .hero h1 em { font-style: italic; color: var(--gold); }
+  .hero-sub {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+    color: rgba(242,232,213,0.65);
+    max-width: 440px;
+    margin-bottom: 3rem;
+    animation: fadeUp 1s 0.2s ease both;
+  }
+  .hero-actions { display: flex; gap: 1rem; animation: fadeUp 1s 0.3s ease both; }
+  .btn-primary {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+    background: var(--red); color: white; border: none; padding: 1rem 2.2rem;
+    cursor: none; text-decoration: none; display: inline-block;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--red-light); transform: scale(1.03); }
+  .btn-ghost {
+    font-size: 0.72rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;
+    background: transparent; color: var(--cream); border: 1px solid var(--border-hover);
+    padding: 1rem 2.2rem; cursor: none; text-decoration: none; display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  .hero-visual {
+    position: absolute; right: 0; top: 0; bottom: 0;
+    width: 46%; display: flex; align-items: center; justify-content: center;
+  }
+  .pizza-circle {
+    width: min(500px, 42vw); height: min(500px, 42vw);
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #3a1a0e 0%, #1a0a05 60%, #0a0704 100%);
+    border: 1px solid rgba(201,168,76,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: min(14rem, 12vw);
+    animation: float 6s ease-in-out infinite;
+    position: relative;
+  }
+  .pizza-circle::after {
+    content: '';
+    position: absolute; inset: -20px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.06);
+  }
+  @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-18px) rotate(3deg); } }
+
+  .hero-stats {
+    position: absolute; bottom: 3rem; left: 4rem;
+    display: flex; gap: 3rem;
+    animation: fadeUp 1s 0.5s ease both;
+  }
+  .stat-item { text-align: left; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); display: block; }
+  .stat-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+  /* SECTION COMMONS */
+  section { padding: 7rem 4rem; }
+  .section-tag {
+    font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem;
+  }
+  .section-tag::before { content: ''; width: 30px; height: 1px; background: var(--gold); display: block; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1.2rem;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+  .divider { width: 40px; height: 2px; background: var(--red); margin: 1.5rem 0 3rem; }
+
+  /* MENU */
+  .menu-section { background: var(--dark); }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); }
+  .menu-item {
+    background: var(--card);
+    padding: 1.8rem 2rem;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .menu-item::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--red);
+    transform: scaleY(0); transform-origin: bottom;
+    transition: transform 0.3s ease;
+  }
+  .menu-item:hover { background: #1a1508; }
+  .menu-item:hover::before { transform: scaleY(1); }
+  .item-cat {
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.6rem;
+  }
+  .item-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.4rem; }
+  .item-desc { font-size: 0.78rem; color: rgba(242,232,213,0.5); line-height: 1.6; margin-bottom: 1rem; }
+  .item-footer { display: flex; align-items: center; justify-content: space-between; }
+  .item-price { font-size: 1.1rem; font-weight: 600; color: var(--gold); }
+  .item-badge {
+    font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+    background: rgba(200,56,42,0.15); color: var(--red-light);
+    border: 1px solid rgba(200,56,42,0.3); padding: 0.25rem 0.65rem;
+  }
+  .popular { color: var(--gold-light); background: rgba(201,168,76,0.1); border-color: rgba(201,168,76,0.3); }
+
+  /* CATEGORIES TABS */
+  .cat-tabs { display: flex; gap: 0; margin-bottom: 3rem; flex-wrap: wrap; }
+  .cat-tab {
+    font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); padding: 0.75rem 1.5rem; cursor: none;
+    border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
+    background: transparent; transition: color 0.2s, border-color 0.2s;
+  }
+  .cat-tab:hover, .cat-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* FEATURED */
+  .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); }
+  .featured-card {
+    background: var(--card);
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .featured-card.big { grid-row: span 2; }
+  .featured-card::before {
+    content: attr(data-emoji);
+    position: absolute; right: 1.5rem; top: 1.5rem;
+    font-size: 5rem; opacity: 0.15;
+    transition: opacity 0.3s, transform 0.4s;
+  }
+  .featured-card:hover::before { opacity: 0.3; transform: rotate(8deg) scale(1.1); }
+  .featured-card .fc-tag { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+  .featured-card h3 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 0.4rem; }
+  .featured-card p { font-size: 0.8rem; color: rgba(242,232,213,0.55); line-height: 1.6; margin-bottom: 1.2rem; }
+  .featured-card .fc-price { font-size: 1.3rem; font-weight: 600; color: var(--gold); }
+
+  /* DESSERTS */
+  .desserts-row { display: flex; gap: 2px; background: var(--border); overflow-x: auto; }
+  .dessert-card {
+    background: var(--card); padding: 2rem 1.8rem;
+    flex: 1 1 180px;
+    transition: background 0.2s;
+  }
+  .dessert-card:hover { background: #1a1508; }
+  .dessert-emoji { font-size: 2.5rem; display: block; margin-bottom: 1rem; }
+  .dessert-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; margin-bottom: 0.3rem; }
+  .dessert-desc { font-size: 0.75rem; color: rgba(242,232,213,0.5); line-height: 1.5; margin-bottom: 0.8rem; }
+  .dessert-price { font-size: 0.95rem; font-weight: 600; color: var(--gold); }
+
+  /* INFO STRIP */
+  .info-strip {
+    display: flex; gap: 0; background: var(--dark);
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .info-block {
+    flex: 1; padding: 2.5rem 2rem; border-right: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 1.2rem;
+  }
+  .info-block:last-child { border-right: none; }
+  .info-icon { font-size: 1.5rem; margin-top: 0.1rem; }
+  .info-label { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+  .info-val { font-size: 0.9rem; font-weight: 500; color: var(--cream); }
+
+  /* ORDER CTA */
+  .order-section {
+    background: linear-gradient(135deg, #160d05 0%, #0a0704 50%, #1a0805 100%);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .order-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%);
+  }
+  .order-section .section-title { font-size: clamp(2.5rem, 5vw, 4rem); }
+  .order-section .btn-primary { font-size: 0.8rem; padding: 1.2rem 3rem; }
+  .order-disc { font-size: 0.72rem; color: var(--muted); margin-top: 1.5rem; letter-spacing: 0.05em; }
+
+  /* FOOTER */
+  footer {
+    background: #050302;
+    padding: 3rem 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border);
+  }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); }
+  .footer-copy { font-size: 0.7rem; color: var(--muted); text-align: center; }
+  .footer-halal {
+    font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); border: 1px solid var(--border); padding: 0.4rem 0.9rem;
+  }
+
+  /* MENU FILTER */
+  .menu-tab-content { display: none; }
+  .menu-tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); }
+
+  /* REVIEWS */
+  .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1px; background: var(--border); }
+  .review-card {
+    background: var(--card); padding: 2rem;
+    display: flex; flex-direction: column; gap: 1rem;
+    transition: background 0.2s;
+  }
+  .review-card:hover { background: #1a1508; }
+  .review-stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 0.1em; }
+  .review-text {
+    font-size: 0.82rem; line-height: 1.75;
+    color: rgba(242,232,213,0.7);
+    font-style: italic;
+    flex: 1;
+  }
+  .review-author { display: flex; align-items: center; gap: 0.9rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .review-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(201,168,76,0.12); border: 1px solid var(--border-hover);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 600; color: var(--gold);
+    flex-shrink: 0;
+  }
+  .review-name { font-size: 0.82rem; font-weight: 500; color: var(--cream); }
+  .review-date { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; letter-spacing: 0.03em; }
+
+  /* ADD TO CART BUTTON on menu items */
+  .btn-add {
+    font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+    background: transparent; color: var(--gold);
+    border: 1px solid var(--border-hover); padding: 0.3rem 0.8rem;
+    cursor: none; transition: background 0.2s, color 0.2s;
+  }
+  .btn-add:hover { background: var(--gold); color: var(--black); }
+
+  /* FLOATING CART */
+  #cart-btn {
+    position: fixed; bottom: 2rem; right: 2rem;
+    background: var(--red); color: white;
+    border: none; border-radius: 0;
+    padding: 1rem 1.6rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+    cursor: none; z-index: 200;
+    display: flex; align-items: center; gap: 0.8rem;
+    box-shadow: 0 8px 32px rgba(200,56,42,0.35);
+    transition: background 0.2s, transform 0.15s;
+    transform: translateY(100px); opacity: 0;
+  }
+  #cart-btn.visible { transform: translateY(0); opacity: 1; transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s; }
+  #cart-btn:hover { background: var(--red-light); transform: scale(1.04); }
+  #cart-count {
+    background: var(--gold); color: var(--black);
+    font-size: 0.65rem; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* WHATSAPP FLOAT */
+  #wa-btn {
+    position: fixed; bottom: 2rem; left: 2rem;
+    background: #25D366; color: white;
+    border: none; border-radius: 0;
+    padding: 1rem 1.4rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+    cursor: none; z-index: 200;
+    display: flex; align-items: center; gap: 0.7rem;
+    box-shadow: 0 8px 32px rgba(37,211,102,0.25);
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none;
+  }
+  #wa-btn:hover { background: #1ebe5d; transform: scale(1.04); }
+  #wa-btn svg { width: 18px; height: 18px; fill: white; flex-shrink: 0; }
+
+  /* CART MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    z-index: 300; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--dark); border: 1px solid var(--border);
+    width: min(560px, 95vw); max-height: 90vh;
+    display: flex; flex-direction: column;
+    transform: translateY(30px); transition: transform 0.3s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header {
+    padding: 1.8rem 2rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; }
+  .modal-close { background: none; border: none; color: var(--muted); font-size: 1.4rem; cursor: none; transition: color 0.2s; }
+  .modal-close:hover { color: var(--cream); }
+  .modal-body { padding: 1.5rem 2rem; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--border); }
+
+  /* CART ITEMS */
+  .cart-empty { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 2rem 0; }
+  .cart-item {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.9rem 0; border-bottom: 1px solid var(--border);
+  }
+  .cart-item:last-child { border-bottom: none; }
+  .ci-name { font-size: 0.88rem; font-weight: 500; flex: 1; }
+  .ci-price { font-size: 0.88rem; color: var(--gold); font-weight: 600; min-width: 60px; text-align: right; }
+  .ci-qty { display: flex; align-items: center; gap: 0.5rem; }
+  .ci-qty button {
+    background: var(--card); border: 1px solid var(--border); color: var(--cream);
+    width: 26px; height: 26px; font-size: 0.9rem; cursor: none;
+    transition: border-color 0.2s; display: flex; align-items: center; justify-content: center;
+  }
+  .ci-qty button:hover { border-color: var(--gold); }
+  .ci-qty span { font-size: 0.85rem; min-width: 18px; text-align: center; }
+
+  /* ORDER FORM */
+  .form-group { margin-bottom: 1.2rem; }
+  .form-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.5rem; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; background: var(--card); border: 1px solid var(--border);
+    color: var(--cream); padding: 0.75rem 1rem;
+    font-family: 'Montserrat', sans-serif; font-size: 0.85rem;
+    transition: border-color 0.2s; outline: none;
+    appearance: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--gold); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .cart-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 0; margin-bottom: 1rem;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .cart-total span:first-child { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .cart-total span:last-child { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); }
+  .btn-whatsapp {
+    width: 100%; background: #25D366; color: white; border: none;
+    padding: 1.1rem; font-family: 'Montserrat', sans-serif;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+    cursor: none; display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-whatsapp:hover { background: #1ebe5d; transform: scale(1.02); }
+  .btn-whatsapp svg { width: 18px; height: 18px; fill: white; }
+  .order-note { font-size: 0.7rem; color: var(--muted); text-align: center; margin-top: 0.8rem; line-height: 1.5; }
+
+  /* STEP INDICATOR */
+  .steps { display: flex; margin-bottom: 2rem; }
+  .step {
+    flex: 1; text-align: center; font-size: 0.62rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); padding-bottom: 0.7rem;
+    border-bottom: 2px solid var(--border); transition: color 0.2s, border-color 0.2s;
+  }
+  .step.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .step.done { color: var(--muted); border-bottom-color: rgba(201,168,76,0.4); }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 2rem; }
+    .nav-links { display: none; }
+    section { padding: 5rem 2rem; }
+    .hero { padding: 0 2rem; }
+    .hero-visual { display: none; }
+    .hero h1 { font-size: 3rem; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .featured-card.big { grid-row: span 1; }
+    .info-strip { flex-direction: column; }
+    .info-block { border-right: none; border-bottom: 1px solid var(--border); }
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+    .hero-stats { display: none; }
+    .nav-links { display: none; }
+    .nav-cta { padding: 0.5rem 1rem; font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Pizza Addict</a>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#vedettes">Vedettes</a></li>
+    <li><a href="#desserts">Desserts</a></li>
+    <li><a href="#info">Infos</a></li>
+    <li><a href="#order">Commander</a></li>
+  </ul>
+  <button class="nav-cta" onclick="openCart()">🛒 Panier</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-content">
+    <div class="hero-pill"><span></span> Halal · Nilvange · Ouvert Ven–Dim</div>
+    <h1>L'art de la<br><em>pizza artisanale</em></h1>
+    <p class="hero-sub">Des pizzas généreuses préparées avec passion, des ingrédients sélectionnés, des recettes qui vous reviennent en tête.</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-primary">Voir le menu</a>
+      <a href="#order" class="btn-ghost">Commander</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="pizza-circle">🍕</div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-num">5,0</span>
+      <span class="stat-label">Note Google</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">174</span>
+      <span class="stat-label">Avis clients</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Halal certifié</span>
+    </div>
+  </div>
+</section>
+
+<!-- VEDETTES -->
+<section id="vedettes" style="padding-top: 5rem; padding-bottom: 3rem; background: var(--dark);">
+  <div class="reveal">
+    <div class="section-tag">Nos stars</div>
+    <h2 class="section-title">Les <em>incontournables</em></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="featured-grid reveal">
+    <div class="featured-card big" data-emoji="🍕">
+      <span class="fc-tag">⭐ Nº 1 le plus aimé</span>
+      <h3>Regina</h3>
+      <p>Mozza fondante, jambon généreux, champignons et olives. Un classique indétrônable.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.5rem;">
+        <span class="fc-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Regina',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="featured-card" data-emoji="🔥">
+      <span class="fc-tag">Nº 2 le plus aimé</span>
+      <h3>Cannibale</h3>
+      <p>Mozza, jambon, merguez, viandes hachées et chorizo.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.5rem;">
+        <span class="fc-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Cannibale',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="featured-card" data-emoji="⛰️">
+      <span class="fc-tag">Gourmande</span>
+      <h3>La Montagnarde</h3>
+      <p>Raclette, poulet, oignons et pomme de terre. La montagne dans votre assiette.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.5rem;">
+        <span class="fc-price">17,00 €</span>
+        <button class="btn-add" onclick="addToCart('La Montagnarde',17)">+ Ajouter</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU COMPLET -->
+<section class="menu-section" id="menu">
+  <div class="reveal">
+    <div class="section-tag">Carte complète</div>
+    <h2 class="section-title">Notre <em>menu</em></h2>
+    <div class="divider"></div>
+  </div>
+
+  <div class="cat-tabs reveal" id="catTabs">
+    <button class="cat-tab active" onclick="showCat('tomate',this)">❤️ Base Tomate</button>
+    <button class="cat-tab" onclick="showCat('creme',this)">🤍 Base Crème</button>
+    <button class="cat-tab" onclick="showCat('gourmandes',this)">🧡 Gourmandes</button>
+  </div>
+
+  <div id="cat-tomate" class="menu-tab-content active reveal">
+    <!-- Tomate pizzas -->
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Margherita</div>
+      <div class="item-desc">Mozza et olives.</div>
+      <div class="item-footer">
+        <span class="item-price">12,50 €</span>
+        <span class="item-badge popular">100% ❤️</span>
+      
+        <button class="btn-add" onclick="addToCart('Margherita',12.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Regina</div>
+      <div class="item-desc">Mozza, jambon, champignons et olives.</div>
+      <div class="item-footer">
+        <span class="item-price">14,50 €</span>
+        <span class="item-badge popular">Nº 1 ⭐</span>
+      
+        <button class="btn-add" onclick="addToCart('Regina',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Végétarienne</div>
+      <div class="item-desc">Mozza, champignons, poivrons et olives.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Végétarienne',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Poulet</div>
+      <div class="item-desc">Mozza, poulet, oignons et poivrons.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Poulet',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Tonno</div>
+      <div class="item-desc">Mozza, thon, oignons et olives.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Tonno',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Cannibale</div>
+      <div class="item-desc">Mozza, jambon, merguez, viandes hachées et chorizo.</div>
+      <div class="item-footer">
+        <span class="item-price">14,50 €</span>
+        <span class="item-badge">Populaire 🔥</span>
+      
+        <button class="btn-add" onclick="addToCart('Cannibale',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Royale</div>
+      <div class="item-desc">Mozza, jambon, champignons, chorizo, olives et œuf.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Royale',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Chef</div>
+      <div class="item-desc">Mozza, viande hachée, poivrons, olives et œuf.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Chef',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Sicilienne</div>
+      <div class="item-desc">Mozza, anchois, câpres et olives.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Sicilienne',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Capricciosa</div>
+      <div class="item-desc">Mozza, jambon, anchois et champignons.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Capricciosa',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Calzone</div>
+      <div class="item-desc">Mozza, jambon, champignons et œuf.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Calzone',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">4 Fromages</div>
+      <div class="item-desc">Mozza, gorgonzola, chèvre et pointe de crème.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('4 Fromages',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Fruits de Mer</div>
+      <div class="item-desc">Mozza et fruit de mer.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Fruits de Mer',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Orientale</div>
+      <div class="item-desc">Mozza, merguez, poivrons et oignons.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Orientale',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">Diavola</div>
+      <div class="item-desc">Mozza, chorizo et poivrons.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Diavola',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base tomate</div>
+      <div class="item-name">India</div>
+      <div class="item-desc">Sauce tomate/curry, mozza, poulet et pommes de terre.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('India',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cat-creme" class="menu-tab-content reveal">
+    <div class="menu-item">
+      <div class="item-cat">Base crème</div>
+      <div class="item-name">La Pizza Addict</div>
+      <div class="item-desc">Mozza, jambon, champignons, poulet et pomme de terre.</div>
+      <div class="item-footer">
+        <span class="item-price">14,50 €</span>
+        <span class="item-badge">Populaire 🔥</span>
+      
+        <button class="btn-add" onclick="addToCart('La Pizza Addict',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base crème</div>
+      <div class="item-name">Saumon</div>
+      <div class="item-desc">Mozza, saumon et oignons.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Saumon',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base crème</div>
+      <div class="item-name">Savoyarde</div>
+      <div class="item-desc">Mozza, jambon, champignons, poulet et pommes de terre.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Savoyarde',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base crème</div>
+      <div class="item-name">Délicieuse</div>
+      <div class="item-desc">Mozza, fromage carré, oignons, poulet et olives.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Délicieuse',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base crème</div>
+      <div class="item-name">Chèvre Miel</div>
+      <div class="item-desc">Mozza, fromage de chèvre et miel.</div>
+      <div class="item-footer">
+        <span class="item-price">14,50 €</span>
+        <span class="item-badge popular">Coup de ♥</span>
+      
+        <button class="btn-add" onclick="addToCart('Chèvre Miel',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Base crème</div>
+      <div class="item-name">Robe des Fêtes</div>
+      <div class="item-desc">Mozza, lardons, fromage carré, oignons et pomme de terre.</div>
+      <div class="item-footer"><span class="item-price">14,50 €</span>
+        <button class="btn-add" onclick="addToCart('Robe des Fêtes',14.5)">+ Ajouter</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cat-gourmandes" class="menu-tab-content reveal">
+    <div class="menu-item">
+      <div class="item-cat">Gourmande</div>
+      <div class="item-name">La Montagnarde</div>
+      <div class="item-desc">Base crème, mozza, jambon, raclette, poulet, oignons et pomme de terre.</div>
+      <div class="item-footer">
+        <span class="item-price">17,00 €</span>
+        <span class="item-badge popular">Populaire ⭐</span>
+      
+        <button class="btn-add" onclick="addToCart('La Montagnarde',17.0)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Gourmande</div>
+      <div class="item-name">4 Fromages Gourmande</div>
+      <div class="item-desc">Mozza, jambon, champignons, gorgonzola, fromage de chèvre, olives et pointe de crème.</div>
+      <div class="item-footer"><span class="item-price">17,00 €</span>
+        <button class="btn-add" onclick="addToCart('4 Fromages Gourmande',17.0)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Gourmande</div>
+      <div class="item-name">Donatella</div>
+      <div class="item-desc">Base crème, mozza, fromage de chèvre, roquette, figues et noix.</div>
+      <div class="item-footer"><span class="item-price">17,00 €</span>
+        <button class="btn-add" onclick="addToCart('Donatella',17.0)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Gourmande</div>
+      <div class="item-name">Spicy</div>
+      <div class="item-desc">Sauce algérienne, mozza, viande hachée, poulet, oignons, poivrons et olives.</div>
+      <div class="item-footer">
+        <span class="item-price">17,00 €</span>
+        <span class="item-badge">🌶️ Épicée</span>
+      
+        <button class="btn-add" onclick="addToCart('Spicy',17.0)">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="item-cat">Gourmande</div>
+      <div class="item-name">India Gourmande</div>
+      <div class="item-desc">Sauce tomate/curry, mozza, jambon, champignons, poivrons, oignons, poulet et pommes de terre.</div>
+      <div class="item-footer"><span class="item-price">17,00 €</span>
+        <button class="btn-add" onclick="addToCart('India Gourmande',17.0)">+ Ajouter</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESSERTS -->
+<section id="desserts" style="background: var(--black);">
+  <div class="reveal">
+    <div class="section-tag">Finales sucrées</div>
+    <h2 class="section-title">Les <em>desserts</em></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="desserts-row reveal">
+    <div class="dessert-card">
+      <span class="dessert-emoji">☕</span>
+      <div class="dessert-name">Tiramisu Café</div>
+      <div class="dessert-desc">Biscuits imbibés de café, crème mascarpone et cacao.</div>
+      <div class="dessert-price">4,00 €</div>
+    </div>
+    <div class="dessert-card">
+      <span class="dessert-emoji">🍪</span>
+      <div class="dessert-name">Tiramisu Spéculoos</div>
+      <div class="dessert-desc">Crème mascarpone et biscuits spéculoos.</div>
+      <div class="dessert-price">4,00 €</div>
+    </div>
+    <div class="dessert-card">
+      <span class="dessert-emoji">🌰</span>
+      <div class="dessert-name">Tiramisu Praliné</div>
+      <div class="dessert-desc">Crème mascarpone, biscuits café, cacao et éclats de praliné.</div>
+      <div class="dessert-price">4,00 €</div>
+    </div>
+    <div class="dessert-card">
+      <span class="dessert-emoji">🍫</span>
+      <div class="dessert-name">Mousse Chocolat</div>
+      <div class="dessert-desc">Mousse au chocolat légère et onctueuse.</div>
+      <div class="dessert-price">4,00 €</div>
+    </div>
+  </div>
+
+  <!-- Boissons -->
+  <div style="margin-top: 4rem;" class="reveal">
+    <div class="section-tag">Accompagnements</div>
+    <h2 class="section-title" style="font-size: 1.8rem;">Boissons</h2>
+    <div class="divider"></div>
+    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+      <span style="font-size:0.85rem; color:rgba(242,232,213,0.6); padding: 0.5rem 1.2rem; border: 1px solid var(--border);">Ice Tea Framboise — <strong style="color:var(--gold)">2,00 €</strong></span>
+      <span style="font-size:0.85rem; color:rgba(242,232,213,0.6); padding: 0.5rem 1.2rem; border: 1px solid var(--border);">Schweppes Agrume — <strong style="color:var(--gold)">2,00 €</strong></span>
+      <span style="font-size:0.85rem; color:rgba(242,232,213,0.6); padding: 0.5rem 1.2rem; border: 1px solid var(--border);">Oasis Fraise Framboise — <strong style="color:var(--gold)">2,00 €</strong></span>
+      <span style="font-size:0.85rem; color:rgba(242,232,213,0.6); padding: 0.5rem 1.2rem; border: 1px solid var(--border);">Oasis Pomme Poire — <strong style="color:var(--gold)">2,00 €</strong></span>
+      <span style="font-size:0.85rem; color:rgba(242,232,213,0.6); padding: 0.5rem 1.2rem; border: 1px solid var(--border);">San Pellegrino — <strong style="color:var(--gold)">2,00 €</strong></span>
+      <span style="font-size:0.85rem; color:rgba(242,232,213,0.6); padding: 0.5rem 1.2rem; border: 1px solid var(--border);">Bissap — <strong style="color:var(--gold)">4,50 €</strong></span>
+    </div>
+  </div>
+</section>
+
+<!-- INFO STRIP -->
+<div class="info-strip" id="info">
+  <div class="info-block">
+    <span class="info-icon">🕐</span>
+    <div>
+      <div class="info-label">Horaires</div>
+      <div class="info-val">Vendredi – Dimanche</div>
+      <div style="font-size:0.78rem; color: var(--muted); margin-top:0.2rem;">17:45 – 23:45</div>
+    </div>
+  </div>
+  <div class="info-block">
+    <span class="info-icon">📍</span>
+    <div>
+      <div class="info-label">Adresse</div>
+      <div class="info-val">64 Rue Maréchal Joffre</div>
+      <div style="font-size:0.78rem; color: var(--muted); margin-top:0.2rem;">57240 Nilvange</div>
+    </div>
+  </div>
+  <div class="info-block">
+    <span class="info-icon">☎️</span>
+    <div>
+      <div class="info-label">Téléphone</div>
+      <div class="info-val">+33 6 58 67 10 53</div>
+    </div>
+  </div>
+  <div class="info-block">
+    <span class="info-icon">✅</span>
+    <div>
+      <div class="info-label">Certifications</div>
+      <div class="info-val">Halal certifié</div>
+      <div style="font-size:0.78rem; color: var(--muted); margin-top:0.2rem;">Note 5,0 ⭐ · 174 avis Google</div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<section id="reviews" style="background: var(--dark);">
+  <div class="reveal">
+    <div class="section-tag">Ce qu'ils disent</div>
+    <h2 class="section-title">Avis <em>clients</em></h2>
+    <div class="divider"></div>
+    <div style="display:flex; align-items:center; gap:2rem; margin-bottom:3rem;">
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:4rem; color:var(--gold); line-height:1;">5,0</div>
+        <div style="color:var(--gold); font-size:1.2rem; letter-spacing:0.1em; margin:0.3rem 0;">★★★★★</div>
+        <div style="font-size:0.72rem; color:var(--muted); letter-spacing:0.15em; text-transform:uppercase;">174 avis Google</div>
+      </div>
+      <div style="width:1px; height:80px; background:var(--border);"></div>
+      <div style="font-size:0.82rem; color:rgba(242,232,213,0.55); line-height:1.7; max-width:320px;">
+        Une équipe passionnée, des ingrédients frais et une pizza qui revient en tête. Voilà ce que disent nos clients.
+      </div>
+    </div>
+  </div>
+
+  <div class="reviews-grid reveal">
+
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"L'impasto, semplicemente eccezionale, si distingue per una leggerezza e una consistenza... Une accueil particulièrement chaleureux, des ingrédients frais et des pizzas authentiquement délicieuses."</p>
+      <div class="review-author">
+        <div class="review-avatar">NK</div>
+        <div>
+          <div class="review-name">nono k</div>
+          <div class="review-date">Janvier 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Les pizzas sont généreuses et préparées avec de vrais produits frais, on sent le savoir-faire dès la première bouchée. Une belle adresse pour se faire plaisir."</p>
+      <div class="review-author">
+        <div class="review-avatar">RT</div>
+        <div>
+          <div class="review-name">Rayhan Taleb</div>
+          <div class="review-date">Novembre 2025</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"J'ai commandé plusieurs pizzas et elles étaient toutes excellentes. L'impasto parfait, généreusement garni, service téléphonique excellent, livraison dans les temps. Honnêtement, je n'ai rien à redire — et je suis quelqu'un d'exigeant !"</p>
+      <div class="review-author">
+        <div class="review-avatar">SZ</div>
+        <div>
+          <div class="review-name">Sam Zo</div>
+          <div class="review-date">Janvier 2026 · Cibo / Servizio / Ambiente : 5/5</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Un rituel hebdomadaire chez Pizza Addict — et toute la famille lui donne 3 × 5 étoiles !"</p>
+      <div class="review-author">
+        <div class="review-avatar">TS</div>
+        <div>
+          <div class="review-name">Tardelli Stéphane</div>
+          <div class="review-date">Décembre 2025 · Local Guide</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Pizzeria exceptionnelle ! Les produits sont frais, la qualité est au rendez-vous et les pizzas sont délicieuses à chaque fois. On a tellement adoré que désormais, on n'ira que là-bas ! Une vraie valeur sûre."</p>
+      <div class="review-author">
+        <div class="review-avatar">MM</div>
+        <div>
+          <div class="review-name">Mélissa Mallick</div>
+          <div class="review-date">Novembre 2025 · À emporter</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"La meilleure pizza des alentours ! Une jeune équipe sérieuse et passionnée, toujours avec une super ambiance. Les prix sont vraiment très abordables pour une qualité pareille."</p>
+      <div class="review-author">
+        <div class="review-avatar">DG</div>
+        <div>
+          <div class="review-name">Dario Gatti</div>
+          <div class="review-date">Octobre 2025 · Sur place</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FLOATING WHATSAPP -->
+<a id="wa-btn" href="#" onclick="openWhatsAppDirect(event)" title="Commander via WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  WhatsApp
+</a>
+
+<!-- FLOATING CART -->
+<button id="cart-btn" onclick="openCart()">
+  🛒 Mon panier <span id="cart-count">0</span>
+</button>
+
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cart-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Ma commande</h3>
+      <button class="modal-close" onclick="closeCart()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- step 1: cart -->
+      <div id="step-cart">
+        <div id="cart-items-list"></div>
+        <div class="cart-total" id="cart-total-row" style="display:none">
+          <span>Total</span>
+          <span id="cart-total-val">0,00 €</span>
+        </div>
+        <button class="btn-primary" style="width:100%;padding:1rem;margin-top:1rem;font-size:0.78rem;" onclick="goToForm()" id="btn-go-form" disabled>
+          Continuer →
+        </button>
+      </div>
+      <!-- step 2: form -->
+      <div id="step-form" style="display:none">
+        <div class="steps">
+          <div class="step done">1. Panier</div>
+          <div class="step active">2. Coordonnées</div>
+          <div class="step">3. Confirmation</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Votre prénom *</label>
+          <input type="text" class="form-input" id="f-name" placeholder="Ex : Karim">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Numéro de téléphone *</label>
+          <input type="tel" class="form-input" id="f-phone" placeholder="06 XX XX XX XX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type de commande *</label>
+          <select class="form-select" id="f-type">
+            <option value="A emporter">À emporter</option>
+            <option value="Sur place">Sur place</option>
+          </select>
+        </div>
+        <div class="form-group" id="address-group" style="display:none">
+          <label class="form-label">Adresse de livraison</label>
+          <input type="text" class="form-input" id="f-address" placeholder="Rue, ville, code postal">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Commentaire (optionnel)</label>
+          <textarea class="form-textarea" id="f-comment" placeholder="Allergies, cuisson souhaitée..."></textarea>
+        </div>
+        <div style="display:flex;gap:1rem;margin-top:1rem;">
+          <button class="btn-ghost" style="flex:1;padding:1rem;font-size:0.75rem;" onclick="goBackCart()">← Retour</button>
+          <button class="btn-whatsapp" style="flex:2;" onclick="sendWhatsApp()">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Confirmer via WhatsApp
+          </button>
+        </div>
+        <p class="order-note">Votre commande sera envoyée en message WhatsApp au restaurant pour confirmation. Ouvert ven–dim dès 17h45.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER SECTION -->
+<section id="order" style="background: linear-gradient(135deg, #160d05 0%, #0a0704 50%, #1a0805 100%); text-align:center; position:relative; overflow:hidden;">
+  <div style="position:relative;z-index:2;" class="reveal">
+    <div class="section-tag" style="justify-content:center;">Commandez maintenant</div>
+    <h2 class="section-title" style="max-width:600px;margin:0 auto 1rem;">Prêt à vous <em>régaler</em> ?</h2>
+    <p style="font-size:0.85rem;color:rgba(242,232,213,0.55);margin-bottom:2.5rem;line-height:1.7;">Composez votre commande depuis le menu, puis confirmez en un clic via WhatsApp.<br>Ouvert vendredi, samedi et dimanche dès 17h45.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <button onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})" class="btn-primary" style="font-size:0.78rem;padding:1.1rem 2.5rem;">Composer ma commande</button>
+      <a onclick="openWhatsAppDirect(event)" href="#" class="btn-ghost" style="font-size:0.78rem;padding:1.1rem 2.5rem;display:inline-flex;align-items:center;gap:0.6rem;">
+        <svg style="width:16px;height:16px;fill:#25D366;" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp direct
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Pizza Addict 🍕</div>
+  <div class="footer-copy">
+    64 Rue Maréchal Joffre, 57240 Nilvange<br>
+    <span style="color: rgba(122,110,94,0.6); font-size: 0.65rem;">© 2026 Pizza Addict · Tous droits réservés</span>
+  </div>
+  <div class="footer-halal">Halal 100%</div>
+</footer>
+
+<script>
+  // ─── CUSTOM CURSOR ───
+  const c = document.getElementById('cursor');
+  const r = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animateCursor() {
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    c.style.left = mx+'px'; c.style.top = my+'px';
+    r.style.left = rx+'px'; r.style.top = ry+'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+  document.querySelectorAll('a, button, .menu-item, .featured-card, .cat-tab').forEach(el => {
+    el.addEventListener('mouseenter', () => { c.style.width='20px'; c.style.height='20px'; r.style.width='60px'; r.style.height='60px'; });
+    el.addEventListener('mouseleave', () => { c.style.width='10px'; c.style.height='10px'; r.style.width='36px'; r.style.height='36px'; });
+  });
+
+  // ─── MENU TABS ───
+  function showCat(cat, btn) {
+    document.querySelectorAll('.menu-tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.cat-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('cat-'+cat).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ─── SCROLL REVEAL ───
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  reveals.forEach(el => obs.observe(el));
+
+  // ─── CART STATE ───
+  let cart = []; // [{name, price, qty}]
+  const WA_NUMBER = '33658671053'; // Pizza Addict phone without +
+
+  function addToCart(name, price) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ name, price, qty: 1 });
+    }
+    updateCartUI();
+    // Flash feedback
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Ajouté';
+    btn.style.background = 'var(--gold)';
+    btn.style.color = 'var(--black)';
+    btn.style.borderColor = 'var(--gold)';
+    setTimeout(() => { btn.textContent = orig; btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; }, 900);
+  }
+
+  function removeFromCart(name) {
+    cart = cart.filter(i => i.name !== name);
+    updateCartUI();
+  }
+
+  function changeQty(name, delta) {
+    const item = cart.find(i => i.name === name);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) cart = cart.filter(i => i.name !== name);
+    updateCartUI();
+  }
+
+  function getTotal() {
+    return cart.reduce((s, i) => s + i.price * i.qty, 0);
+  }
+
+  function updateCartUI() {
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+    document.getElementById('cart-count').textContent = count;
+    const btn = document.getElementById('cart-btn');
+    if (count > 0) btn.classList.add('visible');
+    else btn.classList.remove('visible');
+
+    // Render cart items list
+    const list = document.getElementById('cart-items-list');
+    const totalRow = document.getElementById('cart-total-row');
+    const goBtn = document.getElementById('btn-go-form');
+
+    if (cart.length === 0) {
+      list.innerHTML = '<div class="cart-empty">Votre panier est vide.<br>Ajoutez des pizzas depuis le menu 🍕</div>';
+      totalRow.style.display = 'none';
+      goBtn.disabled = true;
+    } else {
+      list.innerHTML = cart.map(i => `
+        <div class="cart-item">
+          <div class="ci-name">${i.name}</div>
+          <div class="ci-qty">
+            <button onclick="changeQty('${i.name}',-1)">−</button>
+            <span>${i.qty}</span>
+            <button onclick="changeQty('${i.name}',1)">+</button>
+          </div>
+          <div class="ci-price">${(i.price * i.qty).toFixed(2).replace('.',',')} €</div>
+        </div>
+      `).join('');
+      totalRow.style.display = 'flex';
+      document.getElementById('cart-total-val').textContent = getTotal().toFixed(2).replace('.',',') + ' €';
+      goBtn.disabled = false;
+    }
+  }
+
+  // ─── MODAL ───
+  function openCart() {
+    document.getElementById('step-cart').style.display = 'block';
+    document.getElementById('step-form').style.display = 'none';
+    updateCartUI();
+    document.getElementById('cart-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCart() {
+    document.getElementById('cart-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('cart-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('cart-modal')) closeCart();
+  });
+
+  // ─── FORM STEPS ───
+  function goToForm() {
+    if (cart.length === 0) return;
+    document.getElementById('step-cart').style.display = 'none';
+    document.getElementById('step-form').style.display = 'block';
+  }
+
+  function goBackCart() {
+    document.getElementById('step-form').style.display = 'none';
+    document.getElementById('step-cart').style.display = 'block';
+  }
+
+  document.getElementById('f-type').addEventListener('change', function() {
+    document.getElementById('address-group').style.display = this.value === 'Livraison' ? 'block' : 'none';
+  });
+
+  // ─── WHATSAPP SEND ───
+  function buildMessage(name, phone, type, address, comment) {
+    const lines = cart.map(i => `• ${i.name} x${i.qty} — ${(i.price*i.qty).toFixed(2).replace('.',',')} €`);
+    const total = getTotal().toFixed(2).replace('.',',');
+    let msg = `🍕 *Nouvelle commande — Pizza Addict*\n\n`;
+    msg += `*Nom :* ${name}\n`;
+    msg += `*Tél :* ${phone}\n`;
+    msg += `*Type :* ${type}\n`;
+    if (address) msg += `*Adresse :* ${address}\n`;
+    msg += `\n*Commande :*\n${lines.join('\n')}\n`;
+    msg += `\n*Total : ${total} €*\n`;
+    if (comment) msg += `\n*Note :* ${comment}`;
+    return msg;
+  }
+
+  function sendWhatsApp() {
+    const name = document.getElementById('f-name').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    const type = document.getElementById('f-type').value;
+    const address = document.getElementById('f-address').value.trim();
+    const comment = document.getElementById('f-comment').value.trim();
+
+    if (!name || !phone) {
+      alert('Merci de renseigner votre prénom et téléphone.');
+      return;
+    }
+
+    const msg = buildMessage(name, phone, type, address, comment);
+    const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+    closeCart();
+    cart = [];
+    updateCartUI();
+  }
+
+  function openWhatsAppDirect(e) {
+    e.preventDefault();
+    const msg = `🍕 Bonjour Pizza Addict ! Je souhaite passer commande.`;
+    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  // Init cart UI
+  updateCartUI();
+</script>
+
+</body>
+</html>
